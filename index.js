@@ -154,6 +154,8 @@ const Swipeout = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     if (nextProps.close) this._close();
+    if (nextProps.openRight) this._openRight();
+    if (nextProps.openLeft) this._openLeft();
   },
 
   _handlePanResponderGrant: function(e: Object, gestureState: Object) {
@@ -281,6 +283,45 @@ const Swipeout = React.createClass({
       openedLeft: false,
       swiping: false,
     });
+  },
+
+  _openRight: function() {
+    return new Promise((resolve, reject) => {
+      this.refs.swipeoutContent.measure((ox, oy, width, height) => {
+        this.setState({
+          btnWidth: (width/5),
+          btnsRightWidth: this.props.right ? (width/5)*this.props.right.length : 0,
+        });
+        resolve();
+      });
+    }).then(() =>{
+      this._tweenContent('contentPos', -this.state.btnsRightWidth);
+      this.setState({ 
+        contentPos: -this.state.btnsRightWidth, 
+        openedLeft: false, 
+        openedRight: true, 
+        swiping: false 
+      });
+    })
+  },
+
+  _openLeft: function() {
+    return new Promise((resolve, reject) => {
+      this.refs.swipeoutContent.measure((ox, oy, width, height) => {
+        this.setState({
+          btnWidth: (width/5),
+          btnsLeftWidth: this.props.left ? (width/5)*this.props.left.length : 0,
+        });
+      });
+    }).then(() =>{
+      this._tweenContent('contentPos', -this.state.btnsRightWidth);
+      this.setState({ 
+        contentPos: this.state.btnsLeftWidth, 
+        openedLeft: true, 
+        openedRight: false, 
+        swiping: false 
+      });
+    })
   },
 
   render: function() {
