@@ -160,6 +160,11 @@ const Swipeout = React.createClass({
 
   _handlePanResponderGrant: function(e: Object, gestureState: Object) {
     if (this.props.disabled) return;
+    if (!this.state.openedLeft && !this.state.openedRight) {
+      this._callOnOpen();
+    } else {
+      this._callOnClose();
+    }
     this.refs.swipeoutContent.measure((ox, oy, width, height) => {
       let buttonWidth = this.props.buttonWidth || (width/5);
       this.setState({
@@ -278,11 +283,20 @@ const Swipeout = React.createClass({
       onClose(sectionID, rowID, direction);
     }
     this._tweenContent('contentPos', 0);
+    this._callOnClose();
     this.setState({
       openedRight: false,
       openedLeft: false,
       swiping: false,
     });
+  },
+
+  _callOnClose: function() {
+    if (this.props.onClose) this.props.onClose(this.props.sectionID, this.props.rowID);
+  },
+
+  _callOnOpen: function() {
+    if (this.props.onOpen) this.props.onOpen(this.props.sectionID, this.props.rowID);
   },
 
   _openRight: function() {
@@ -292,6 +306,7 @@ const Swipeout = React.createClass({
         btnsRightWidth: this.props.right ? (width/5)*this.props.right.length : 0,
       }, () => {
         this._tweenContent('contentPos', -this.state.btnsRightWidth);
+        this._callOnOpen();
         this.setState({ 
           contentPos: -this.state.btnsRightWidth, 
           openedLeft: false, 
@@ -309,6 +324,7 @@ const Swipeout = React.createClass({
         btnsLeftWidth: this.props.left ? (width/5)*this.props.left.length : 0,
       }, () => {
         this._tweenContent('contentPos', this.state.btnsLeftWidth);
+        this._callOnOpen();
         this.setState({ 
           contentPos: this.state.btnsLeftWidth, 
           openedLeft: true, 
