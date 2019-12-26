@@ -1,6 +1,6 @@
-import React, {
-  PropTypes,
-} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import createReactClass from 'create-react-class';
 
 import {
   TouchableWithoutFeedback,
@@ -27,23 +27,23 @@ const styles = StyleSheet.create({
   },
 });
 
-const NativeButton = React.createClass({
+const NativeButton = createReactClass({
 
   propTypes: {
     // Extract parent props
     ...TouchableWithoutFeedback.propTypes,
-    textStyle: Text.propTypes.style,
-    disabledStyle: Text.propTypes.style,
+    textStyle: PropTypes.any,
+    disabledStyle: PropTypes.any,
     children: PropTypes.node.isRequired,
     underlayColor: PropTypes.string,
-    background: (TouchableNativeFeedback.propTypes) ? TouchableNativeFeedback.propTypes.background : PropTypes.any,
+    background: PropTypes.any,
   },
 
   statics: {
     isAndroid: (Platform.OS === 'android'),
   },
 
-  getDefaultProps: function() {
+  getDefaultProps: function () {
     return {
       textStyle: null,
       disabledStyle: null,
@@ -51,20 +51,20 @@ const NativeButton = React.createClass({
     };
   },
 
-  _renderText: function() {
+  _renderText: function () {
     // If children is not a string don't wrapp it in a Text component
     if (typeof this.props.children !== 'string') {
       return this.props.children;
     }
 
     return (
-      <Text style={ [ styles.textButton, this.props.textStyle ] }>
-        { this.props.children }
+      <Text numberOfLines={1} ellipsizeMode={Platform.OS === 'ios' ? 'clip' : 'tail'} style={[styles.textButton, this.props.textStyle]}>
+        {this.props.children}
       </Text>
     );
   },
 
-  render: function() {
+  render: function () {
     const disabledStyle = this.props.disabled ? (this.props.disabledStyle || styles.opacity) : {};
 
     // Extract Button props
@@ -106,8 +106,8 @@ const NativeButton = React.createClass({
       <TouchableHighlight
         {...buttonProps}
         style={[styles.button, this.props.style, disabledStyle]}
-        underlayColor={ this.props.underlayColor }>
-        { this._renderText() }
+        underlayColor={this.props.underlayColor}>
+        {this._renderText()}
       </TouchableHighlight>
     );
   }
